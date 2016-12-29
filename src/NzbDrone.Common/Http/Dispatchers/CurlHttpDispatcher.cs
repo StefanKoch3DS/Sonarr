@@ -21,6 +21,7 @@ namespace NzbDrone.Common.Http.Dispatchers
         private static readonly Regex ExpiryDate = new Regex(@"(expires=)([^;]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         private readonly IHttpProxySettingsProvider _proxySettingsProvider;
+        private readonly IUserAgentBuilder _userAgentBuilder;
         private readonly Logger _logger;
 
         private const string _caBundleFileName = "curl-ca-bundle.crt";
@@ -38,9 +39,10 @@ namespace NzbDrone.Common.Http.Dispatchers
             }
         }
         
-        public CurlHttpDispatcher(IHttpProxySettingsProvider proxySettingsProvider, Logger logger)
+        public CurlHttpDispatcher(IHttpProxySettingsProvider proxySettingsProvider, IUserAgentBuilder userAgentBuilder, Logger logger)
         {
             _proxySettingsProvider = proxySettingsProvider;
+            _userAgentBuilder = userAgentBuilder;
             _logger = logger;
         }
 
@@ -104,7 +106,7 @@ namespace NzbDrone.Common.Http.Dispatchers
                         default:
                             throw new NotSupportedException(string.Format("HttpCurl method {0} not supported", request.Method));
                     }
-                    curlEasy.UserAgent = request.UseSimplifiedUserAgent ? UserAgentBuilder.UserAgentSimplified : UserAgentBuilder.UserAgent; ;
+                    curlEasy.UserAgent = request.UseSimplifiedUserAgent ? _userAgentBuilder.UserAgentSimplified : _userAgentBuilder.UserAgent; ;
                     curlEasy.FollowLocation = request.AllowAutoRedirect;
 
                     if (request.RequestTimeout != TimeSpan.Zero)

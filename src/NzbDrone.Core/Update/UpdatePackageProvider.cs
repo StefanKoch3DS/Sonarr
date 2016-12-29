@@ -15,11 +15,13 @@ namespace NzbDrone.Core.Update
     public class UpdatePackageProvider : IUpdatePackageProvider
     {
         private readonly IHttpClient _httpClient;
+        private readonly IPlatformInfo _platformInfo;
         private readonly IHttpRequestBuilderFactory _requestBuilder;
 
-        public UpdatePackageProvider(IHttpClient httpClient, ISonarrCloudRequestBuilder requestBuilder)
+        public UpdatePackageProvider(IHttpClient httpClient, ISonarrCloudRequestBuilder requestBuilder, IPlatformInfo platformInfo)
         {
             _httpClient = httpClient;
+            _platformInfo = platformInfo;
             _requestBuilder = requestBuilder.Services;
         }
 

@@ -2,19 +2,38 @@ using NzbDrone.Common.EnvironmentInfo;
 
 namespace NzbDrone.Common.Http
 {
-    public static class UserAgentBuilder
+    public interface IUserAgentBuilder
     {
-        public static string UserAgent { get; private set; }
-        public static string UserAgentSimplified { get; private set; }
+        string UserAgent { get; }
+        string UserAgentSimplified { get; }
+    }
 
-        static UserAgentBuilder()
+    public class UserAgentBuilder : IUserAgentBuilder
+    {
+        public string UserAgent { get; }
+        public string UserAgentSimplified { get; }
+
+        public string GetUserAgent(bool full)
         {
-            UserAgent = string.Format("Sonarr/{0} ({1} {2})",
-                BuildInfo.Version,
-                OsInfo.Os, OsInfo.Version.ToString(2));
+            if (full)
+            {
+                return UserAgent;
+            } 
 
-            UserAgentSimplified = string.Format("Sonarr/{0}",
-                BuildInfo.Version.ToString(2));
+            return UserAgentSimplified;
+        }
+
+
+
+
+        public UserAgentBuilder(IPlatformInfo platformInfo, IOsInfo osInfo)
+        {
+            var osName = osInfo.Name.ToLower();
+            var osVersion = osInfo.Version.ToLower();
+            var platformName = PlatformInfo.Platform.ToString().ToUpper();
+
+            UserAgent = $"Sonarr/{BuildInfo.Version} ({OsInfo.Os}; {osName} {osVersion}) {platformName} {platformInfo.Version}";
+            UserAgentSimplified = $"Sonarr/{BuildInfo.Version.ToString(2)}";
         }
     }
 }
