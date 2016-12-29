@@ -31,6 +31,7 @@ namespace NzbDrone.Core.Update
                                          .Resource("/update/{branch}")
                                          .AddQueryParam("version", currentVersion)
                                          .AddQueryParam("os", OsInfo.Os.ToString().ToLowerInvariant())
+                                         .AddQueryParam("runtimeVer", _platformInfo.Version)
                                          .SetSegment("branch", branch)
                                          .Build();
 
@@ -47,6 +48,7 @@ namespace NzbDrone.Core.Update
                                          .Resource("/update/{branch}/changes")
                                          .AddQueryParam("version", currentVersion)
                                          .AddQueryParam("os", OsInfo.Os.ToString().ToLowerInvariant())
+                                         .AddQueryParam("runtimeVer", _platformInfo.Version)
                                          .SetSegment("branch", branch)
                                          .Build();
 

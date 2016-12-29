@@ -104,9 +104,9 @@ namespace NzbDrone.Common.Http.Dispatchers
                             break;
 
                         default:
-                            throw new NotSupportedException(string.Format("HttpCurl method {0} not supported", request.Method));
+                            throw new NotSupportedException($"HttpCurl method {request.Method} not supported");
                     }
-                    curlEasy.UserAgent = request.UseSimplifiedUserAgent ? _userAgentBuilder.UserAgentSimplified : _userAgentBuilder.UserAgent; ;
+                    curlEasy.UserAgent = _userAgentBuilder.GetUserAgent(request.UseSimplifiedUserAgent);
                     curlEasy.FollowLocation = request.AllowAutoRedirect;
 
                     if (request.RequestTimeout != TimeSpan.Zero)

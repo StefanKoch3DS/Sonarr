@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NLog;
 
 namespace NzbDrone.Common.EnvironmentInfo
 {
@@ -49,13 +50,20 @@ namespace NzbDrone.Common.EnvironmentInfo
             }
         }
 
-        public OsInfo(IEnumerable<IOsVersionAdapter> versionAdapters)
+        public OsInfo(IEnumerable<IOsVersionAdapter> versionAdapters, Logger logger)
         {
             OsVersionModel osInfo = null;
 
             foreach (var osVersionAdapter in versionAdapters.Where(c => c.Enabled))
             {
-                osInfo = osVersionAdapter.Read();
+                try
+                {
+                    osInfo = osVersionAdapter.Read();
+                }
+                catch (Exception e)
+                {
+                    logger.Error(e, "Couldn't get OS Version info");
+                }
 
                 if (osInfo != null)
                 {

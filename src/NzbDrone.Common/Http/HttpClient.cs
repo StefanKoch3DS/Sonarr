@@ -170,7 +170,7 @@ namespace NzbDrone.Common.Http
 
                 var stopWatch = Stopwatch.StartNew();
                 var webClient = new GZipWebClient();
-                webClient.Headers.Add(HttpRequestHeader.UserAgent, _userAgentBuilder.UserAgent);
+                webClient.Headers.Add(HttpRequestHeader.UserAgent, _userAgentBuilder.GetUserAgent());
                 webClient.DownloadFile(url, fileName);
                 stopWatch.Stop();
                 _logger.Debug("Downloading Completed. took {0:0}s", stopWatch.Elapsed.Seconds);

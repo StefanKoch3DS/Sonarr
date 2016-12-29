@@ -4,36 +4,31 @@ namespace NzbDrone.Common.Http
 {
     public interface IUserAgentBuilder
     {
-        string UserAgent { get; }
-        string UserAgentSimplified { get; }
+        string GetUserAgent(bool simplified = false);
     }
 
     public class UserAgentBuilder : IUserAgentBuilder
     {
-        public string UserAgent { get; }
-        public string UserAgentSimplified { get; }
+        private readonly string _userAgentSimplified;
+        private readonly string _userAgent;
 
-        public string GetUserAgent(bool full)
+        public string GetUserAgent(bool simplified)
         {
-            if (full)
+            if (simplified)
             {
-                return UserAgent;
-            } 
+                return _userAgentSimplified;
+            }
 
-            return UserAgentSimplified;
+            return _userAgent;
         }
 
-
-
-
-        public UserAgentBuilder(IPlatformInfo platformInfo, IOsInfo osInfo)
+        public UserAgentBuilder(IOsInfo osInfo)
         {
             var osName = osInfo.Name.ToLower();
             var osVersion = osInfo.Version.ToLower();
-            var platformName = PlatformInfo.Platform.ToString().ToUpper();
 
-            UserAgent = $"Sonarr/{BuildInfo.Version} ({OsInfo.Os}; {osName} {osVersion}) {platformName} {platformInfo.Version}";
-            UserAgentSimplified = $"Sonarr/{BuildInfo.Version.ToString(2)}";
+            _userAgent = $"Sonarr/{BuildInfo.Version} ({osName} {osVersion})";
+            _userAgentSimplified = $"Sonarr/{BuildInfo.Version.ToString(2)}";
         }
     }
 }
