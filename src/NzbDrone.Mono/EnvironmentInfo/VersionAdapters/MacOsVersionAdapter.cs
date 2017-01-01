@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -27,20 +26,29 @@ namespace NzbDrone.Mono.EnvironmentInfo.VersionAdapters
 
             var allFiles = _diskProvider.GetFiles("/System/Library/CoreServices/", SearchOption.TopDirectoryOnly);
 
-            var versionFiles = allFiles.Where(c => c.EndsWith("-Version.plist")).ToList();
+            var versionFile = allFiles.SingleOrDefault(c=>
+                c.EndsWith("SystemVersion.plist") ||
+                c.EndsWith("ServerVersion.plist")
+            );
 
-            foreach (var file in versionFiles)
+            if (string.IsNullOrWhiteSpace(versionFile))
             {
-                var text = _diskProvider.ReadAllText(file);
-                var match = DarwinVersionRegex.Match(text);
-
-                if (match.Success)
-                {
-                    version = match.Groups["version"].Value;
-                }
+                return null;
             }
 
-            return new OsVersionModel("macOS", version);
+            var text = _diskProvider.ReadAllText(versionFile);
+            var match = DarwinVersionRegex.Match(text);
+
+
+
+            if (match.Success)
+            {
+                version = match.Groups["version"].Value;
+            }
+
+            var name = versionFile.Contains("Server") ? "macOS Server" : "macOS";
+
+            return new OsVersionModel(name, version);
         }
 
         public bool Enabled => OsInfo.IsOsx;
